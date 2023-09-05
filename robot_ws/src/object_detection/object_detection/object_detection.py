@@ -1,6 +1,4 @@
 import mediapipe as mp
-from mediapipe.tasks import python
-from mediapipe.tasks.python import vision
 from ament_index_python.packages import get_package_share_directory
 import os
 import numpy as np
@@ -21,14 +19,15 @@ class ObjectDetection:
     
     
     
-    def __init__(self) -> None:
+    def __init__(self, max_results=1) -> None:
         model_path = os.path.join(
             get_package_share_directory("object_detection"), "model", "efficientdet_lite0.tflite"
         )
-        
+
+        # Options for object detector model
         options = ObjectDetectorOptions(
             base_options=BaseOptions(model_asset_path=model_path),
-            max_results=2,
+            max_results=max_results,
             running_mode=VisionRunningMode.IMAGE,
         )
         
@@ -36,6 +35,14 @@ class ObjectDetection:
         
         
     def detect(self, image: np.ndarray):
+        """
+
+        Args:
+            image (np.ndarray): _description_
+
+        Returns:
+            _type_: _description_
+        """
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=image)
         detection_result = self.model.detect(mp_image)
         return self.visualize(image, detection_result)

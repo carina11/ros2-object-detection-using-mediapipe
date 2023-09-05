@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
 
-#  ------------------------------------------------------------------
-#   Copyright (C) Karelics Oy - All Rights Reserved
-#   Unauthorized copying of this file, via any medium is strictly
-#   prohibited. All information contained herein is, and remains
-#   the property of Karelics Oy.
-#  ------------------------------------------------------------------
-
-
 from typing import List, Optional
 
 # ROS
@@ -18,7 +10,6 @@ from rclpy.parameter import Parameter
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy
 from rclpy.callback_groups import ReentrantCallbackGroup
 
-
 # Thirdparty
 # ROS Image message -> OpenCV2 image converter
 from cv_bridge import CvBridge
@@ -26,22 +17,22 @@ from cv_bridge import CvBridge
 # ROS messages
 from sensor_msgs.msg import Image
 
-# Karelics messages
-
 # Object Detection
 from object_detection import ObjectDetection
 
 class ObjectDetectionNode(Node):
-    """This node recognizes hand gestures.
+    """This node detects objects in the given image topic.
 
-    Input: ROS image, Output: Detected gesture
+    Subscribes to an image.
+    Publishes an image with results annotations.
     """
 
     def __init__(self) -> None:
-        super().__init__("gesture_detection_node")
+        super().__init__("object_detection_node")
 
         # Read from parameters
         topic_image: str = self.declare_parameter("topic_image", Parameter.Type.STRING).value
+        max_results: int = self.declare_parameter("max_results", Parameter.Type.INTEGER).value
         qos = QoSProfile(depth=1, reliability=QoSReliabilityPolicy.BEST_EFFORT)
 
         self.create_subscription(
@@ -53,7 +44,7 @@ class ObjectDetectionNode(Node):
         )
         
         self.bridge = CvBridge()
-        self.object_detection = ObjectDetection()
+        self.object_detection = ObjectDetection(max_results=max_results)
 
         self.publisher = self.create_publisher(Image, "object_detection/image", 10)
         
