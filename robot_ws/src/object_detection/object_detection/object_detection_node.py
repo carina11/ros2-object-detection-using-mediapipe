@@ -19,6 +19,7 @@ from sensor_msgs.msg import Image
 
 # Object Detection
 from object_detection import ObjectDetection
+from object_detection_msgs.msg import DetectionResult
 
 class ObjectDetectionNode(Node):
     """This node detects objects in the given image topic.
@@ -46,12 +47,14 @@ class ObjectDetectionNode(Node):
         self.bridge = CvBridge()
         self.object_detection = ObjectDetection(max_results=max_results)
 
-        self.publisher = self.create_publisher(Image, "object_detection/image", 10)
+        self._image_publisher = self.create_publisher(Image, "object_detection/image", 10)
+        self._result_publisher = self.create_publisher(DetectionResult, "object_detection/result", 10)
         
     def _image_callback(self, image: Image) -> None:
         cv_image = self.bridge.imgmsg_to_cv2(image, "rgb8")
-        result_image = self.object_detection.detect(cv_image)
-        self.publisher.publish(self.bridge.cv2_to_imgmsg(result_image, "rgb8"))
+        result_image, detection_result = self.object_detection.detect(cv_image)
+        self._result_publisher.publish(detection_result)
+        self._image_publisher.publish(self.bridge.cv2_to_imgmsg(result_image, "rgb8"))
 
 
 

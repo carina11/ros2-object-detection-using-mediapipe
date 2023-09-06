@@ -3,17 +3,15 @@ from ament_index_python.packages import get_package_share_directory
 import os
 import numpy as np
 import cv2
+from object_detection_msgs.msg import Box, Detection, DetectionResult
+
+from visualizer import Visualizer
 
 BaseOptions = mp.tasks.BaseOptions
 ObjectDetector = mp.tasks.vision.ObjectDetector
 ObjectDetectorOptions = mp.tasks.vision.ObjectDetectorOptions
 VisionRunningMode = mp.tasks.vision.RunningMode
 
-MARGIN = 10  # pixels
-ROW_SIZE = 10  # pixels
-FONT_SIZE = 1
-FONT_THICKNESS = 1
-TEXT_COLOR = (0, 255, 0)  # red
 
 class ObjectDetection:
     
@@ -31,52 +29,51 @@ class ObjectDetection:
             running_mode=VisionRunningMode.IMAGE,
         )
         
+        # Object Detector
         self.model = ObjectDetector.create_from_options(options)
+        
+        # Load visualizer
+        self.visualizer = Visualizer((0, 255, 0)) # Text color: green
+        
         
         
     def detect(self, image: np.ndarray):
-        """
+        """Runs Object Detection on the input image and returns an image with bounding box and results.
 
         Args:
-            image (np.ndarray): _description_
+            image (np.ndarra): Input image
 
         Returns:
-            _type_: _description_
+            Image with bounding box
+            Detection results
         """
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=image)
         detection_result = self.model.detect(mp_image)
-        return self.visualize(image, detection_result)
+        return self.visualizer.visualize(image, detection_result), self._prepare_result(detection_result)
+    
+    
+    @staticmethod
+    def _prepare_result(detection_result):
+        detection_result_ros = DetectionResult()
+        for detection in detection_result.detections:
+            bounding_box_ros = Box(
+                x=detection.bounding_box.origin_x,
+                y=detection.bounding_box.origin_y,
+                w=detection.bounding_box.width,
+                h=detection.bounding_box.height,
+            )
+            
+            detection_ros = Detection(
+                bounding_box = bounding_box_ros,
+                score = detection.categories[0].score,
+                name = detection.categories[0].category_name,
+            )
+            
+            detection_result_ros.detections.append(detection_ros)
+            
         
+        return detection_result_ros
 
 
     
-    @staticmethod
-    def visualize(
-        image,
-        detection_result
-    ) -> np.ndarray:
-        """Draws bounding boxes on the input image and return it.
-        Args:
-            image: The input RGB image.
-            detection_result: The list of all "Detection" entities to be visualize.
-        Returns:
-            Image with bounding boxes.
-        """
-        for detection in detection_result.detections:
-            # Draw bounding_box
-            bbox = detection.bounding_box
-            start_point = bbox.origin_x, bbox.origin_y
-            end_point = bbox.origin_x + bbox.width, bbox.origin_y + bbox.height
-            cv2.rectangle(image, start_point, end_point, TEXT_COLOR, 3)
-
-            # Draw label and score
-            category = detection.categories[0]
-            category_name = category.category_name
-            probability = round(category.score, 2)
-            result_text = category_name + ' (' + str(probability) + ')'
-            text_location = (MARGIN + bbox.origin_x,
-                            MARGIN + ROW_SIZE + bbox.origin_y)
-            cv2.putText(image, result_text, text_location, cv2.FONT_HERSHEY_PLAIN,
-                        FONT_SIZE, TEXT_COLOR, FONT_THICKNESS)
-
-        return image
+    
