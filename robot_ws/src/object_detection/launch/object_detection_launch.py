@@ -9,7 +9,8 @@ from launch_ros.actions import Node
 def generate_launch_description():
     """Generates LaunchDescription for object detection."""
     param_file = os.path.join(
-        get_package_share_directory("object_detection"), "params", "object_detection.yaml"
+        get_package_share_directory(
+            "object_detection"), "params", "object_detection.yaml"
     )
 
     object_detection = Node(
@@ -23,7 +24,6 @@ def generate_launch_description():
         ],
         arguments=["--ros-args", "--log-level", "info"],
     )
-
 
     nodes_list = [object_detection]
 

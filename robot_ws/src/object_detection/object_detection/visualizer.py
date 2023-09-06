@@ -2,6 +2,7 @@ from typing import Tuple
 import numpy as np
 import cv2
 
+
 class Visualizer:
     def __init__(self, text_color: Tuple[int, int, int]) -> None:
         self.margin = 10
@@ -9,8 +10,7 @@ class Visualizer:
         self.font_size = 1
         self.font_thickness = 1
         self.text_color = text_color
-    
-    
+
     def visualize(
         self,
         image,
@@ -36,7 +36,7 @@ class Visualizer:
             probability = round(category.score, 2)
             result_text = category_name + ' (' + str(probability) + ')'
             text_location = (self.margin + bbox.origin_x,
-                            self.margin + self.row_size + bbox.origin_y)
+                             self.margin + self.row_size + bbox.origin_y)
             cv2.putText(image, result_text, text_location, cv2.FONT_HERSHEY_PLAIN,
                         self.font_size, self.text_color, self.font_thickness)
 
