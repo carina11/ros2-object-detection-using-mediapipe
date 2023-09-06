@@ -45,7 +45,7 @@ All the parameters for this launch file are described in the Nodes section.
 | Topic | Message Type | Description |
 |-------|---|---|
 | /object_detection/image | sensor_msgs/Image | Image with bounding boxes |
-| /object_detection/result | object_detection_msgs/DetectionResult | Image with bounding boxes |
+| /object_detection/result | object_detection_msgs/DetectionResult | Object detection results|
 
 DetectionResult:
 - detections
