@@ -3,7 +3,7 @@ version: "3.8"
 # Compose file that is used in our internal development pipelines. Not used for production
 
 services:
-  gesture_detection:
+  object_detection:
     image: object_detection:latest
     container_name: object_detection
     network_mode: host
