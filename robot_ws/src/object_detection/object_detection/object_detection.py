@@ -5,7 +5,7 @@ import numpy as np
 import cv2
 from object_detection_msgs.msg import Box, Detection, DetectionResult
 
-from visualizer import Visualizer
+from object_detection.visualizer import Visualizer
 
 BaseOptions = mp.tasks.BaseOptions
 ObjectDetector = mp.tasks.vision.ObjectDetector

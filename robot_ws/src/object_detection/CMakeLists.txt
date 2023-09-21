@@ -16,6 +16,7 @@ install(DIRECTORY
   launch
   params
   model
+  test
   DESTINATION share/${PROJECT_NAME}/
 )
 
