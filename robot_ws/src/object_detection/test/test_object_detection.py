@@ -12,7 +12,7 @@ IMAGE_PATH = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__
 
 
 class GestureDetectionTests(unittest.TestCase):
-    """Unit tests for GestureDetection."""
+    """Unit tests for Object Detection."""
 
     def setUp(self) -> None:
         # Load the package
