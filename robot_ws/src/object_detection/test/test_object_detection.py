@@ -5,7 +5,7 @@ import unittest
 import cv2 as cv
 
 # Current package
-from object_detection.object_detection import ObjectDetection
+from object_detection.object_detection_main import ObjectDetection
 
 # Image path
 IMAGE_PATH = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__), "images"))

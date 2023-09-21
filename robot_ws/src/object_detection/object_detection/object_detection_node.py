@@ -18,7 +18,7 @@ from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 
 # Object Detection
-from object_detection import ObjectDetection
+from object_detection_main import ObjectDetection
 from object_detection_msgs.msg import DetectionResult
 
 
